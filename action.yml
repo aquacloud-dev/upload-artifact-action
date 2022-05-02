@@ -4,6 +4,10 @@ inputs:
   bucket:
     description: 'S3 bucket'
     required: true
+  path: 
+    description: 'S3 path'
+    required: false
+    default: ''
   source:
     description: 'Source directory'
     required: true
@@ -20,6 +24,10 @@ inputs:
     description: 'Context directory'
     default: .
     required: false
+outputs:
+  s3_url:
+    description: 'Remote url'
+    value: ${{ steps.upload_url.s3_url }}
 runs:
   using: composite
   steps:
@@ -40,4 +48,9 @@ runs:
         aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
         aws_region: ${{ inputs.aws_region }}
         source: ${{ inputs.context }}/${{ inputs.source }}.zip
-        destination: s3://${{ inputs.bucket }}/${{ github.repository }}/${{ inputs.source }}.zip
+        destination: s3://${{ inputs.bucket }}/${{ github.repository }}${{ inputs.path }}/${{ inputs.source }}.zip
+    - 
+      name: Output Path
+      id: upload_url
+      shell: bash 
+      run: echo ::set-output name=s3_url::"s3://${{ inputs.bucket }}/${{ github.repository }}${{ inputs.path }}/${{ inputs.source }}.zip"
