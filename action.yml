@@ -1,0 +1,43 @@
+name: Upload S3 Artifact
+description: 'Upload an artifact to S3'
+inputs:
+  bucket:
+    description: 'S3 bucket'
+    required: true
+  source:
+    description: 'Source directory'
+    required: true
+  aws_region:
+    description: 'S3 region'
+    required: true
+  aws_access_key_id:
+    description: 'AWS Access Key ID'
+    required: true
+  aws_secret_access_key:
+    description: 'AWS Secret Access Key'
+    required: true
+  context:
+    description: 'Context directory'
+    default: .
+    required: false
+runs:
+  using: composite
+  steps:
+    -
+      name: Zip Folder/Files
+      uses: montudor/action-zip@v1
+    -
+      name: Create Zip
+      shell: bash
+      run: zip -qq -r ${{ inputs.source }}.zip ${{ inputs.source }}
+      working-directory: ${{ inputs.context }}
+    -
+      name: Upload to S3
+      uses: keithweaver/aws-s3-github-action@v1.0.0
+      with:
+        command: cp
+        aws_access_key_id: ${{ inputs.aws_access_key_id }}
+        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
+        aws_region: ${{ inputs.aws_region }}
+        source: ${{ inputs.source }}.zip
+        destination: s3://${{ inputs.bucket }}/${{ github.repository }}/${{ inputs.source }}.zip
