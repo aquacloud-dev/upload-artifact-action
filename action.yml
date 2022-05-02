@@ -39,5 +39,5 @@ runs:
         aws_access_key_id: ${{ inputs.aws_access_key_id }}
         aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
         aws_region: ${{ inputs.aws_region }}
-        source: ${{ inputs.source }}.zip
+        source: ${{ inputs.context }}/${{ inputs.source }}.zip
         destination: s3://${{ inputs.bucket }}/${{ github.repository }}/${{ inputs.source }}.zip
