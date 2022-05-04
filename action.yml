@@ -59,9 +59,9 @@ runs:
         aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
         aws_region: ${{ inputs.aws_region }}
         source: ${{ inputs.context }}/${{ steps.trim-sha.outputs.sha }}.zip
-        destination: s3://${{ inputs.bucket }}/${{ github.repository }}${{ inputs.path }}/${{ steps.trim-sha.outputs.sha }}.zip
+        destination: s3://${{ inputs.bucket }}/${{ github.repository }}${{ inputs.path }}/${{ steps.zip.outputs.zip_file }}.zip
     -
       id: upload_url
       name: Output Path
       shell: bash
-      run: echo ::set-output name=s3_url::"s3://${{ inputs.bucket }}/${{ github.repository }}${{ inputs.path }}/${{ steps.trim-sha.outputs.sha }}.zip"
+      run: echo ::set-output name=s3_url::"s3://${{ inputs.bucket }}/${{ github.repository }}${{ inputs.path }}/${{ steps.zip.outputs.zip_file }}.zip"
