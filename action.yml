@@ -30,7 +30,7 @@ outputs:
     value: ${{ steps.upload_url.outputs.s3_url }}
   zip_file:
     description: 'Name of the uploaded zip file'
-    value: ${{ steps.trim-sha.outputs.sha }}
+    value: ${{ steps.zip.outputs.zip_file }}
 runs:
   using: composite
   steps:
