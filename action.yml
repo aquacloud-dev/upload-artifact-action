@@ -44,7 +44,7 @@ runs:
     -
       id: zip
       name: Create Zip
-      uses: aquacloud-dev/actions-zip@main
+      uses: aquacloud-dev/zip-action@v1
       with:
         files: ${{ inputs.source}}
         output: ${{ steps.trim-sha.outputs.sha }}
