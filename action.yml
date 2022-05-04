@@ -26,8 +26,11 @@ inputs:
     required: false
 outputs:
   s3_url:
-    description: 'Remote url'
-    value: ${{ steps.upload_url.s3_url }}
+    description: 'S3 Url'
+    value: ${{ steps.upload_url.outputs.s3_url }}
+  zip_file:
+    description: 'Name of the uploaded zip file'
+    value: ${{ steps.trim-sha.outputs.sha }}
 runs:
   using: composite
   steps:
