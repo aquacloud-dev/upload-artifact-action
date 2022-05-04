@@ -4,12 +4,12 @@ inputs:
   bucket:
     description: 'S3 bucket'
     required: true
-  path: 
+  path:
     description: 'S3 path'
     required: false
     default: ''
   source:
-    description: 'Source directory'
+    description: 'Source files/directoreis'
     required: true
   aws_region:
     description: 'S3 region'
@@ -32,14 +32,22 @@ runs:
   using: composite
   steps:
     -
-      name: Zip Folder/Files
-      uses: montudor/action-zip@v1
-    -
-      name: Create Zip
+      id: trim-sha
+      name: Trim SHA
       shell: bash
-      run: zip -qq -r ${{ inputs.source }}.zip ${{ inputs.source }}
-      working-directory: ${{ inputs.context }}
+      run: |
+        SHA="${{github.sha}}"
+        echo ::set-output name=sha::${SHA:0:7}
     -
+      id: zip
+      name: Create Zip
+      uses: aquacloud-dev/actions-zip@main
+      with:
+        files: ${{ inputs.source}}
+        output: ${{ steps.trim-sha.outputs.sha }}
+        context: ${{ inputs.context }}
+    -
+      id: upload
       name: Upload to S3
       uses: keithweaver/aws-s3-github-action@v1.0.0
       with:
@@ -47,10 +55,10 @@ runs:
         aws_access_key_id: ${{ inputs.aws_access_key_id }}
         aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
         aws_region: ${{ inputs.aws_region }}
-        source: ${{ inputs.context }}/${{ inputs.source }}.zip
-        destination: s3://${{ inputs.bucket }}/${{ github.repository }}${{ inputs.path }}/${{ inputs.source }}.zip
-    - 
-      name: Output Path
+        source: ${{ inputs.context }}/${{ steps.trim-sha.outputs.sha }}.zip
+        destination: s3://${{ inputs.bucket }}/${{ github.repository }}${{ inputs.path }}/${{ steps.trim-sha.outputs.sha }}.zip
+    -
       id: upload_url
-      shell: bash 
-      run: echo ::set-output name=s3_url::"s3://${{ inputs.bucket }}/${{ github.repository }}${{ inputs.path }}/${{ inputs.source }}.zip"
+      name: Output Path
+      shell: bash
+      run: echo ::set-output name=s3_url::"s3://${{ inputs.bucket }}/${{ github.repository }}${{ inputs.path }}/${{ steps.trim-sha.outputs.sha }}.zip"
